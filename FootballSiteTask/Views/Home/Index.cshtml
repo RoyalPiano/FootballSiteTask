@@ -1,0 +1,46 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model SelectionPageVM
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Футболисты</title>
+</head>
+<body>   
+    <partial name="_HeaderPartial">
+    <form method="post">
+        <p><b>Имя футболиста:</b><br></p>
+        <input type="text" required="required" size="40" asp-for="FootballPlayer.Name">
+        <p><b>Фамилия футболиста:</b><br></p>
+        <input type="text" required="required" size="40" asp-for="FootballPlayer.Surname">
+        <p><b>Пол футболиста:</b><br></p>
+
+        <select sex required="required" asp-for="FootballPlayer.Sex">
+            <option>@Sex.Male</option>
+            <option>@Sex.Female</option>
+        </select>
+
+        <p><b>Дата рождения футболиста:</b><br></p>
+        DateTime: <input class="form-control" required="required" asp-for="FootballPlayer.DateOfBirth" />
+
+        <p><b>Команда:</b><br></p>
+        <input type="text" list="teamNames" asp-for="FootballPlayer.TeamName" />
+        <datalist id="teamNames">
+            @foreach (string teamName in Model.TeamNames)
+            {
+                <option>@teamName</option>
+            }
+        </datalist>
+
+        <p><b>Страна:</b><br></p>
+        <select countries required="required" asp-for="FootballPlayer.Country">
+            @foreach (Country country in ListOfCountries.Countries)
+            {
+                <option>@country</option>
+            }
+        </select>
+
+        <input type="submit" value="Добавить" asp-action="ApproachIndex" asp-controller="Home" />
+    </form>
+</body>
+</html>

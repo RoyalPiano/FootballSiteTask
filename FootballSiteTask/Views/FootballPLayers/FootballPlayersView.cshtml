@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+@model FootballPlayersRepository
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>FootballPlayersView</title>
+</head>
+<body>
+    <partial name="_HeaderPartial">
+    <h1>Список футболистов:</h1>
+    @{
+        foreach (FootballPlayer footballPlayer in Model.FootballPlayers)
+        {
+            var model = new SelectionPageVM();
+            model.FootballPlayer = footballPlayer;
+            model.TeamNames = Model.GetTeamNames();
+            <partial name="AllFootballPlayers" , model="model" />
+        }
+    }
+</body>
+</html>
+

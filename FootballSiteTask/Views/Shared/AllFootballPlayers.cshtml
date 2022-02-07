@@ -1,0 +1,102 @@
+﻿@model SelectionPageVM
+
+<div id="@Model.FootballPlayer.Id player">
+    <form>
+        <h2 id="@Model.FootballPlayer.Id name"> Имя: @Model.FootballPlayer.Name</h2>
+        <h2 id="@Model.FootballPlayer.Id surname" name="Surname">Фамилия: @Model.FootballPlayer.Surname</h2>
+        <p id="@Model.FootballPlayer.Id sex" name="Sex">Пол: @Model.FootballPlayer.Sex</p>
+        <p id="@Model.FootballPlayer.Id dateOfBirth" name="DateOfBirth">Дата рождения: @Model.FootballPlayer.DateOfBirth.ToString("dd/MM/yyyy")</p>
+        <p id="@Model.FootballPlayer.Id teamName" name="TeamName">Название команды: @Model.FootballPlayer.TeamName</p>
+        <p id="@Model.FootballPlayer.Id country" name="Country">Страна: @Model.FootballPlayer.Country</p>
+        <input type="button" value="Изменить" onclick="EditFootballPlayer(@Model.FootballPlayer.Id)" />
+        <input type="button" value="Удалить" onclick="DeleteFootballPlayer(@Model.FootballPlayer.Id)" />
+    </form>
+</div>
+
+<div id="@Model.FootballPlayer.Id edit" style="display:none;">
+    <form id="@Model.FootballPlayer.Id">
+        <table>
+            <tr>
+                <td>Имя</td>
+                <td><input value="@Model.FootballPlayer.Name" asp-for="FootballPlayer.Name"></td>
+            </tr>
+            <tr>
+                <td>Фамилия</td>
+                <td><input value="@Model.FootballPlayer.Surname" asp-for="FootballPlayer.Surname"></td>
+            </tr>
+            <tr>
+                <td>Пол</td>
+                <td><select sex required="required" asp-for="FootballPlayer.Sex">
+                <option>@Sex.Male</option>
+                <option>@Sex.Female</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td>Дата рождения:</td>
+                <td><input value="@Model.FootballPlayer.DateOfBirth.ToString("yyyy-MM-dd")" class="form-control" required="required" asp-for="FootballPlayer.DateOfBirth" /></td>
+            </tr>
+            <tr>
+                <td>Название команды:</td>
+                <td>
+                    <input type="text" list="teamNames" asp-for="FootballPlayer.TeamName" />
+                    <datalist id="teamNames">
+                        @foreach (string teamName in Model.TeamNames)
+                        {
+                            <option>@teamName</option>
+                        }
+                    </datalist>
+                </td>
+            </tr>
+            <tr>
+                <td>Страна:</td>
+                <td>
+                    <select countries required="required" asp-for="FootballPlayer.Country">
+                        @foreach (Country country in ListOfCountries.Countries)
+                        {
+                            <option>@country</option>
+                        }
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input value="@Model.FootballPlayer.Id" style="display: none" asp-for="FootballPlayer.Id"></td>
+            </tr>
+        </table>
+        <input id="btnsubmit" type="button" value="Сохранить" onclick="SaveChanges(@Model.FootballPlayer.Id)"/>
+    </form>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    function SaveChanges(id) {
+        document.getElementById(id + " player").style.display = "block";
+        document.getElementById(id + " edit").style.display = "none";
+        var valdata = $("#" + id).serialize();
+        $.post('/FootballPlayers/Save', valdata, function (view) {
+            var result = JSON.parse(view);
+            document.getElementById(id + " name").innerText = "Имя: " + result.Name;
+            document.getElementById(id + " surname").innerText = "Фамилия: " + result.Surname;
+            document.getElementById(id + " sex").innerText = "Пол: " + result.Sex;
+            var tempDate = result.DateOfBirth.split('T')[0].split('-');
+            document.getElementById(id + " dateOfBirth").innerText = "Дата рождения: " + `${tempDate[2]}.${tempDate[1]}.${tempDate[0]}`;//new Date(result.DateOfBirth.split('T')[0]).getDate;
+            document.getElementById(id + " teamName").innerText = "Название команды: " + result.TeamName;
+            document.getElementById(id + " country").innerText = "Страна: " + result.Country;
+        });
+    }
+
+    function DeleteFootballPlayer(id) {
+        var data = { id: id };
+        var result = confirm("Вы уверены, что хотите удалить футболиста?");
+        if (result == true) {
+            $.post('/FootballPlayers/Delete', data);
+            document.getElementById(id + " player").style.display = "none";
+        }
+        else { return false; }
+    }
+
+    function EditFootballPlayer(id) {
+        document.getElementById(id + " player").style.display = "none";
+        document.getElementById(id + " edit").style.display = "block";
+    }
+</script>
